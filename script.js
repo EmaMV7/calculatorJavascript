@@ -1,10 +1,15 @@
 const buttons = document.createRange().createContextualFragment(`
-<button class="module">%</button><button class="clearEntry">CE</button><button class="clear">C</button><button class="delete"><=</button>
-<button class="fraction">1/x</button><button class="squared">x2</button><button class="squareRoot">√x"</button><button class="division">%</button>
-<button class="number seven">7</button><button class="number eight">8</button><button class="number nine">9</button><button class="multiplacation">x</button>
-<button class="number four">4</button><button class="number five">5</button><button class="number six">6</button><button class="less">-</button>
-<button class="number one">1</button><button class="number two">2</button><button class="number three">3</button><button class="plus">+</button>
-<button class="moreOrLess">+/-</button><button class="number cero">0</button><button class="dot">.</button><button class="equal">=</button>
+<button class="module">%</button>  <button class="clearEntry">CE</button>  <button class="clear">C</button>  <button class="delete"><=</button>
+
+<button class="fraction">1/x</button>  <button class="squared">x2</button>  <button class="squareRoot">√x</button>  <button class="division">/</button>
+
+<button class="number seven">7</button>  <button class="number eight">8</button>  <button class="number nine">9</button>  <button class="multiplacation">x</button>
+
+<button class="number four">4</button>  <button class="number five">5</button>  <button class="number six">6</button>  <button class="less">-</button>
+
+<button class="number one">1</button>  <button class="number two">2</button>  <button class="number three">3</button>  <button class="plus">+</button>
+
+<button class="moreOrLess">+/-</button>  <button class="number cero">0</button>  <button class="dot">.</button>  <button class="equal">=</button>
 `);
 
 const bodyC = document.querySelector(".buttons");
@@ -52,62 +57,82 @@ const equal = document.querySelector(".equal");
 
 
 // Action line 1
-module.addEventListener("click", ()=>{
-    digits.textContent= ('%')    
+module.addEventListener("click", ()=>{ 
+    simbol = '%';
+    pressKey(simbol);
 })
 clearEntry.addEventListener("click", ()=>{
-    digits.textContent= ('CE')    
+    digits.textContent= ('0');
+    totalA = [];
 })
 clear.addEventListener("click", ()=>{
     digits.textContent= ('0');
-    total = [];   
+    totalA = [];
 })
 Cdelete.addEventListener("click", ()=>{
-    digits.textContent= ('<=')    
+    totalA.pop()
+    if(totalA == 0){
+        totalA = [0]
+    }
+    digits.textContent= totalA.join('')
 })
 
 
 // Action line 2
 fraction.addEventListener("click", ()=>{
-    digits.textContent= ('1/x')    
+    x = totalA.join('')
+    result = 1 / x
+    digits.textContent = result;
 })
 squared.addEventListener("click", ()=>{
-    digits.textContent= ('x2')    
+    x = totalA.join('');
+    result = x * x;
+    digits.textContent = result;
 })
 squareRoot.addEventListener("click", ()=>{
-    digits.textContent= ('√x')    
+    x = totalA.join('');
+    result = Math.sqrt(parseFloat(x));
+    digits.textContent = result;
 })
 division.addEventListener("click", ()=>{
-    digits.textContent= ('/')    
+    simbol = '/';
+    pressKey(simbol);
 })
 
 // Action line 3
 seven.addEventListener("click", ()=>{
-    number = 7
-    digits.textContent= ('7')
+    number = 7;
+    pressKey(number);
 })
 eight.addEventListener("click", ()=>{
-    digits.textContent= ('8')    
+    number = 8;
+    pressKey(number);
 })
 nine.addEventListener("click", ()=>{
-    digits.textContent= ('9')    
+    number = 9;
+    pressKey(number);
 })
 multiplacation.addEventListener("click", ()=>{
-    digits.textContent= ('x')    
+    simbol = 'x';
+    pressKey(simbol);  
 })
 
 // Action line 4
 four.addEventListener("click", ()=>{
-    digits.textContent= ('4')    
+    number = 4
+    pressKey(number); 
 })
 five.addEventListener("click", ()=>{
-    digits.textContent= ('5')    
+    number = 5
+    pressKey(number); 
 })
 six.addEventListener("click", ()=>{
-    digits.textContent= ('6')    
+    number = 6
+    pressKey(number); 
 })
 less.addEventListener("click", ()=>{
-    digits.textContent= ('-')    
+    simbol = '-';
+    pressKey(simbol);  
 })
 
 // Action line 5
@@ -120,7 +145,8 @@ two.addEventListener("click", ()=>{
     pressKey(number);
 })
 three.addEventListener("click", ()=>{
-    digits.textContent= ('3')    
+    number = 3;
+    pressKey(number);  
 })
 plus.addEventListener("click", ()=>{
     simbol = '+'
@@ -129,43 +155,106 @@ plus.addEventListener("click", ()=>{
 
 // Action line 6
 moreOrLess.addEventListener("click", ()=>{
-    digits.textContent= ('+/-')    
+    
+    if(totalA[0] == '-'){
+        totalA.shift();
+    }else{
+        totalA.unshift('-')
+    }
+    digits.textContent= totalA.join('')
 })
 cero.addEventListener("click", ()=>{
-    digits.textContent= ('0')    
+    number = 0
+    pressKey(number); 
 })
 dot.addEventListener("click", ()=>{
-    digits.textContent= ('.')    
+    simbol = '.'
+    pressKey(simbol); 
 })
 equal.addEventListener("click", ()=>{ 
     operations();   
 })
 
  
-total = []
+totalA = []
+
+// next step - i need to separate in diferents variables (numberB, simbol, numberB)
+// totalB = []
+// s = ''
 function pressKey(simbol){
-    total.push(simbol)
-    console.log(total)
-    
-    digits.textContent = total.join('')    
+
+    totalA.push(simbol)
+    digits.textContent = totalA.join('')
 }
+    
 
 function operations(){
 
-    a = total.join('')
+    a = totalA.join('')
+    console.log(a)
     
     for(i of a){
+        // Sum
         if(i == '+'){
-            console.log('es suma');
-            total.split('+')
-            console.log(total)
-        }
-    }
-    // if()
-    // for
-    // if 
-    // result =
+            z = a.split('+');
+            
+            numberA = parseFloat(z[0])
+            numberB = parseFloat(z[1])
+            
+            result = numberA + numberB
 
+            digits.textContent = result
+            totalA = []
+            totalA.push(result)
+            break;
+        }
+
+        // Subtraction
+        if(i == '-'){
+            z = a.split('-');
+            
+            numberA = parseFloat(z[0])
+            numberB = parseFloat(z[1])
+            
+            result = numberA - numberB
+
+            digits.textContent = result
+            totalA = []
+            totalA.push(result)
+            break;
+        }
+
+        // Multiplication
+        if(i == 'x'){
+            z = a.split('x');
+            
+            numberA = parseFloat(z[0])
+            numberB = parseFloat(z[1])
+            
+            result = numberA * numberB
+
+            digits.textContent = result
+            totalA = []
+            totalA.push(result)
+            break;
+        }
+
+        // Division
+        if(i == '/'){
+            z = a.split('/');
+            
+            numberA = parseFloat(z[0])
+            numberB = parseFloat(z[1])
+            
+            result = numberA / numberB
+
+            digits.textContent = result
+            totalA = []
+            totalA.push(result)
+            break;
+        }
+
+    }
 }
 
 
