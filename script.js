@@ -71,8 +71,8 @@ clear.addEventListener("click", ()=>{
     valueS = [];
     valueA = [];
     valueB = [];
-    allSim = [];
-    contSim = 0;
+    allSym = [];
+    contSym = 0;
     posiSym = [];
     withEqual = 0;
     withSimbol = 0;
@@ -80,12 +80,23 @@ clear.addEventListener("click", ()=>{
     digits.textContent= ('0');
 })
 Cdelete.addEventListener("click", ()=>{
-    valueS.pop()
+
+    symbols.forEach(x => {
+        if(x == valueS.slice(-1)){
+            allSym = [];
+            contSym = 0;
+        }
+    })
+
+    valueS.pop();
     if(valueS == 0){
-        valueS = [0]
+        valueS = [0];
     }
-    console.log(valueS)
-    digits.textContent= valueS.join('')
+
+    console.log('allSym: ', allSym);
+    console.log('contSym: ', contSym);
+    console.log('valueS: ',valueS);
+    digits.textContent= valueS.join('');
 })
 
 
@@ -193,29 +204,35 @@ equal.addEventListener("click", ()=>{
 valueS = [];
 valueA = [];
 valueB = [];
-allSim = [];
-contSim = 0;
+allSym = [];
+contSym = 0;
 
-// positionSimbols
+// positionSymbols
 posiSym = [];
 withEqual = 0;
 withSimbol = 0;
 isPossible = 0;
 
+// allSyms
+symbols = ['%', 'x2', '√x','x','/','-','+'];
+
 function pressKey(simbol){
+
+    if(valueS.slice(0) == 0){
+        valueS.shift();
+    }
 
     valueS.push(simbol);
     
     console.log('PSG: ', posiSym);
-    simbols = ['%', 'x2', '√x','x','/','-','+'];
-    simbols.forEach( x => {
+    symbols.forEach( x => {
         if(simbol == x){
-            contSim ++;
+            contSym ++;
             posiSym.push(valueS.length);
             
             console.log('PK valueS: ',valueS)
             // Change symbol
-            console.log('PS0: ', posiSym);
+            console.log('PSG: ', posiSym);
             console.log('PS0: ', posiSym[0]);
             console.log('PS1: ', posiSym[1]);
             if(parseInt(posiSym[0]) + 1 == parseInt(posiSym[1])){
@@ -223,17 +240,17 @@ function pressKey(simbol){
                 if(valueS[valueS.length - 2] != valueS.slice(-1)){
                     valueS = valueS.slice(0, -2).concat(valueS.slice(-1));
                     posiSym.pop();
-                    allSim.shift();
+                    allSym.shift();
                 }else{
                     valueS.pop();
-                    allSim.pop();
+                    allSym.pop();
                     posiSym.pop();
                 }
-                contSim = 1;
+                contSym = 1;
             }
             
             // Operation with other simbol
-            if(contSim == 2){
+            if(contSym == 2){
                 console.log('yendo a operaciones');
                 withSimbol = 1;
                 console.log('posiSym[0]: ',posiSym[0]);
@@ -243,7 +260,7 @@ function pressKey(simbol){
             }
             
             valueA.push(valueS.join('').slice(0, -1));
-            allSim.push(simbol);
+            allSym.push(simbol);
         }
     })
 
@@ -260,8 +277,8 @@ function operations(){
 
     a = valueS.join('')
 
-    console.log('allSimG: ', allSim)
-    console.log('allSim[0]: ', allSim[0])
+    console.log('allSymG: ', allSym)
+    console.log('allSym[0]: ', allSym[0])
     const symbolToOperation = {
         '+' : (a,b) => a + b,
         '-' : (a,b) => a - b,
@@ -269,7 +286,7 @@ function operations(){
         'x' : (a,b) => a * b,
     };
     
-    const operation = symbolToOperation[allSim[0]]
+    const operation = symbolToOperation[allSym[0]]
     if(operation){
         console.log('operation: ',operation)
         console.log('lo encontro');
@@ -284,17 +301,17 @@ function operations(){
     if(withEqual == 1){
         valueS = [result];
         withEqual = 0;
-        contSim = 0;
+        contSym = 0;
     }
 
     if(withSimbol == 1){
         valueS = [result, valueS.slice(-1).join('')];
         withSimbol = 0;
-        contSim = 1;
+        contSym = 1;
         posiSym = [2];
     }
 
-    allSim.shift();
+    allSym.shift();
 
     valueA = [result];
     valueB = [];
