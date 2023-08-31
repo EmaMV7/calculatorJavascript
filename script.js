@@ -12,6 +12,7 @@ const buttons = document.createRange().createContextualFragment(`
 <button class="moreOrLess">+/-</button>  <button class="number cero">0</button>  <button class="dot">.</button>  <button class="equal">=</button>
 `);
 
+
 const bodyC = document.querySelector(".buttons");
 
 bodyC.append(buttons);
@@ -62,35 +63,45 @@ module.addEventListener("click", ()=>{
     pressKey(simbol);
 })
 clearEntry.addEventListener("click", ()=>{
-    digits.textContent= ('0');
-    totalA = [];
+    valueB = [0];
+    
+    digits.textContent= valueS.join('');
 })
 clear.addEventListener("click", ()=>{
+    valueS = [];
+    valueA = [];
+    valueB = [];
+    allSim = [];
+    contSim = 0;
+    posiSym = [];
+    withEqual = 0;
+    withSimbol = 0;
+    
     digits.textContent= ('0');
-    totalA = [];
 })
 Cdelete.addEventListener("click", ()=>{
-    totalA.pop()
-    if(totalA == 0){
-        totalA = [0]
+    valueS.pop()
+    if(valueS == 0){
+        valueS = [0]
     }
-    digits.textContent= totalA.join('')
+    console.log(valueS)
+    digits.textContent= valueS.join('')
 })
 
 
 // Action line 2
 fraction.addEventListener("click", ()=>{
-    x = totalA.join('')
+    x = valueS.join('')
     result = 1 / x
     digits.textContent = result;
 })
 squared.addEventListener("click", ()=>{
-    x = totalA.join('');
+    x = valueS.join('');
     result = x * x;
     digits.textContent = result;
 })
 squareRoot.addEventListener("click", ()=>{
-    x = totalA.join('');
+    x = valueS.join('');
     result = Math.sqrt(parseFloat(x));
     digits.textContent = result;
 })
@@ -156,12 +167,12 @@ plus.addEventListener("click", ()=>{
 // Action line 6
 moreOrLess.addEventListener("click", ()=>{
     
-    if(totalA[0] == '-'){
-        totalA.shift();
+    if(valueS[0] == '-'){
+        valueS.shift();
     }else{
-        totalA.unshift('-')
+        valueS.unshift('-')
     }
-    digits.textContent= totalA.join('')
+    digits.textContent= valueS.join('')
 })
 cero.addEventListener("click", ()=>{
     number = 0
@@ -172,89 +183,121 @@ dot.addEventListener("click", ()=>{
     pressKey(simbol); 
 })
 equal.addEventListener("click", ()=>{ 
-    operations();   
+    withEqual = 1;
+    valueB.push(valueS.slice(posiSym[0]).join(''));
+    posiSym = [];
+    operations();
 })
 
- 
-totalA = []
+// valueScreen
+valueS = [];
+valueA = [];
+valueB = [];
+allSim = [];
+contSim = 0;
 
-// next step - i need to separate in diferents variables (numberB, simbol, numberB)
-// totalB = []
-// s = ''
+// positionSimbols
+posiSym = [];
+withEqual = 0;
+withSimbol = 0;
+isPossible = 0;
+
 function pressKey(simbol){
 
-    totalA.push(simbol)
-    digits.textContent = totalA.join('')
+    valueS.push(simbol);
+    
+    console.log('PSG: ', posiSym);
+    simbols = ['%', 'x2', '√x','x','/','-','+'];
+    simbols.forEach( x => {
+        if(simbol == x){
+            contSim ++;
+            posiSym.push(valueS.length);
+            
+            console.log('PK valueS: ',valueS)
+            // Change symbol
+            console.log('PS0: ', posiSym);
+            console.log('PS0: ', posiSym[0]);
+            console.log('PS1: ', posiSym[1]);
+            if(parseInt(posiSym[0]) + 1 == parseInt(posiSym[1])){
+                console.log('entro WTF');
+                if(valueS[valueS.length - 2] != valueS.slice(-1)){
+                    valueS = valueS.slice(0, -2).concat(valueS.slice(-1));
+                    posiSym.pop();
+                    allSim.shift();
+                }else{
+                    valueS.pop();
+                    allSim.pop();
+                    posiSym.pop();
+                }
+                contSim = 1;
+            }
+            
+            // Operation with other simbol
+            if(contSim == 2){
+                console.log('yendo a operaciones');
+                withSimbol = 1;
+                console.log('posiSym[0]: ',posiSym[0]);
+                valueB.push(valueS.slice(posiSym[0]).slice(0, -1).join(''));
+                console.log('PK valueB: ',valueB);
+                operations();                
+            }
+            
+            valueA.push(valueS.join('').slice(0, -1));
+            allSim.push(simbol);
+        }
+    })
+
+    
+    console.log('PK valueS: ',valueS)
+    digits.textContent = valueS.join('');
+
+
+    console.log('--- terminooooo ---');
 }
     
 
 function operations(){
 
-    a = totalA.join('')
-    console.log(a)
+    a = valueS.join('')
+
+    console.log('allSimG: ', allSim)
+    console.log('allSim[0]: ', allSim[0])
+    const symbolToOperation = {
+        '+' : (a,b) => a + b,
+        '-' : (a,b) => a - b,
+        '/' : (a,b) => a / b,
+        'x' : (a,b) => a * b,
+    };
     
-    for(i of a){
-        // Sum
-        if(i == '+'){
-            z = a.split('+');
-            
-            numberA = parseFloat(z[0])
-            numberB = parseFloat(z[1])
-            
-            result = numberA + numberB
-
-            digits.textContent = result
-            totalA = []
-            totalA.push(result)
-            break;
-        }
-
-        // Subtraction
-        if(i == '-'){
-            z = a.split('-');
-            
-            numberA = parseFloat(z[0])
-            numberB = parseFloat(z[1])
-            
-            result = numberA - numberB
-
-            digits.textContent = result
-            totalA = []
-            totalA.push(result)
-            break;
-        }
-
-        // Multiplication
-        if(i == 'x'){
-            z = a.split('x');
-            
-            numberA = parseFloat(z[0])
-            numberB = parseFloat(z[1])
-            
-            result = numberA * numberB
-
-            digits.textContent = result
-            totalA = []
-            totalA.push(result)
-            break;
-        }
-
-        // Division
-        if(i == '/'){
-            z = a.split('/');
-            
-            numberA = parseFloat(z[0])
-            numberB = parseFloat(z[1])
-            
-            result = numberA / numberB
-
-            digits.textContent = result
-            totalA = []
-            totalA.push(result)
-            break;
-        }
-
+    const operation = symbolToOperation[allSim[0]]
+    if(operation){
+        console.log('operation: ',operation)
+        console.log('lo encontro');
+        console.log('VS: ',valueS);
+        console.log('VA: ',valueA);
+        console.log('VA0: ',valueA[0]);
+        console.log('VB: ',valueB);
+        result = operation(parseFloat(valueA[0]), parseFloat(valueB));
+        digits.textContent = result
     }
+
+    if(withEqual == 1){
+        valueS = [result];
+        withEqual = 0;
+        contSim = 0;
+    }
+
+    if(withSimbol == 1){
+        valueS = [result, valueS.slice(-1).join('')];
+        withSimbol = 0;
+        contSim = 1;
+        posiSym = [2];
+    }
+
+    allSim.shift();
+
+    valueA = [result];
+    valueB = [];
 }
 
 
