@@ -58,13 +58,19 @@ const equal = document.querySelector(".equal");
 
 
 // Action line 1
-module.addEventListener("click", ()=>{ 
-    simbol = '%';
-    pressKey(simbol);
-})
+
 clearEntry.addEventListener("click", ()=>{
-    valueB = [0];
-    
+    if(valueS == []){
+        valueS = [];
+    }else{
+        if(block == 0){
+            valueA = ['0']
+            valueS = valueA
+        }else{
+            valueB = ['0'];
+            valueS = [valueA.join('') + allSym[0] + valueB] 
+        }
+    }
     digits.textContent= valueS.join('');
 })
 clear.addEventListener("click", ()=>{
@@ -75,46 +81,87 @@ clear.addEventListener("click", ()=>{
     contSym = 0;
     posiSym = [];
     withEqual = 0;
-    withSimbol = 0;
+    withSymbol = 0;
     
     digits.textContent= ('0');
 })
-Cdelete.addEventListener("click", ()=>{
-
-    symbols.forEach(x => {
-        if(x == valueS.slice(-1)){
+Cdelete.addEventListener("click", ()=>{    
+    symbols.forEach(symbol => {
+        if(symbol == valueS.slice(-1)){
             allSym = [];
+            posiSym = [];
             contSym = 0;
+            block = 0;
         }
     })
 
-    valueS.pop();
-    if(valueS == 0){
-        valueS = [0];
-    }
+    if(contSym == 1){valueB.pop();
+    }else{valueA.pop();}
 
-    console.log('allSym: ', allSym);
-    console.log('contSym: ', contSym);
-    console.log('valueS: ',valueS);
+    valueS.pop();
+
+    if(valueS == 0){valueS = [0];}
     digits.textContent= valueS.join('');
 })
 
 
 // Action line 2
 fraction.addEventListener("click", ()=>{
-    x = valueS.join('')
-    result = 1 / x
-    digits.textContent = result;
+
+    if(block == 0){
+        x = parseFloat(valueS.join(''));
+        valueA = [1 / x];
+        valueS = valueA.toString().split('');
+        
+        if(contSym == 1){
+            valueS = valueS.concat(allSym[0]);
+            posiSym[0] = valueS.length + 1;
+        }
+        digits.textContent = valueS.join('');
+    }else{
+        x = parseFloat(valueB.join(''));
+        valueB = [1 / x];
+        valueS = [valueA.join('') + allSym[0] + valueB];
+        digits.textContent = valueS.join('');
+    }
 })
 squared.addEventListener("click", ()=>{
-    x = valueS.join('');
-    result = x * x;
-    digits.textContent = result;
+
+    if(block == 0){
+        x = parseFloat(valueS.join(''));
+        valueA = [x * x];
+        valueS = valueA.toString().split('');
+        
+        if(contSym == 1){
+            valueS = valueS.concat(allSym[0]);
+            posiSym[0] = valueS.length + 1;
+        }
+        digits.textContent = valueS.join('');
+    }else{
+        posiSym[0] = valueA.toString().length + 1;
+        x = parseFloat(valueB.join(''));
+        valueB = [x * x];
+        valueS = [valueA.join('') + allSym[0] + valueB];
+        digits.textContent = valueS.join('');
+    }
 })
 squareRoot.addEventListener("click", ()=>{
-    x = valueS.join('');
-    result = Math.sqrt(parseFloat(x));
-    digits.textContent = result;
+    if(block == 0){
+        x = parseFloat(valueS.join(''));
+        valueA = [Math.sqrt(x)];
+        valueS = valueA.toString().split('');
+        
+        if(contSym == 1){
+            valueS = valueS.concat(allSym[0]);
+            posiSym[0] = valueS.length + 1;
+        }
+        digits.textContent = valueS.join('');
+    }else{
+        x = parseFloat(valueB.join(''));
+        valueB = [Math.sqrt(x)];
+        valueS = [valueA.join('') + allSym[0] + valueB];
+        digits.textContent = valueS.join('');
+    }
 })
 division.addEventListener("click", ()=>{
     simbol = '/';
@@ -176,15 +223,7 @@ plus.addEventListener("click", ()=>{
 })
 
 // Action line 6
-moreOrLess.addEventListener("click", ()=>{
-    
-    if(valueS[0] == '-'){
-        valueS.shift();
-    }else{
-        valueS.unshift('-')
-    }
-    digits.textContent= valueS.join('')
-})
+
 cero.addEventListener("click", ()=>{
     number = 0
     pressKey(number); 
@@ -193,14 +232,15 @@ dot.addEventListener("click", ()=>{
     simbol = '.'
     pressKey(simbol); 
 })
-equal.addEventListener("click", ()=>{ 
-    withEqual = 1;
-    valueB.push(valueS.slice(posiSym[0]).join(''));
-    posiSym = [];
-    operations();
+equal.addEventListener("click", ()=>{
+    if(valueB.length != 0){
+        withEqual = 1;
+        operations();
+    }
 })
 
 // valueScreen
+block = 0;
 valueS = [];
 valueA = [];
 valueB = [];
@@ -210,33 +250,51 @@ contSym = 0;
 // positionSymbols
 posiSym = [];
 withEqual = 0;
-withSimbol = 0;
+withSymbol = 0;
 isPossible = 0;
 
 // allSyms
-symbols = ['%', 'x2', '√x','x','/','-','+'];
+symbols = ['+','-','x','/'];
 
-function pressKey(simbol){
 
-    if(valueS.slice(0) == 0){
-        valueS.shift();
+function pressKey(key){
+    
+    // if S start at 0
+    if(valueS[0] == 0){
+        if(!valueS[0] == 0 && !valueS[1] == '.'){
+            valueS.shift();
+        }
+    }
+    
+    // if B start at 0
+    if(valueB[0] == '0'){
+        if(!valueB[0] == 0 && !valueB[1] == '.'){
+            valueB.shift();
+            valueS = valueS.join('').split('');
+            valueS.pop();
+        }
     }
 
-    valueS.push(simbol);
-    
-    console.log('PSG: ', posiSym);
-    symbols.forEach( x => {
-        if(simbol == x){
+    valueS.push(key);
+
+    valueS = valueS.join('').split('');
+
+    // add value to A
+    if(contSym == 0){
+        valueA = valueS.join('');
+    }
+
+    // if a symbol is added
+    symbols.forEach(symbol => {
+        if(symbol == key){
             contSym ++;
             posiSym.push(valueS.length);
-            
-            console.log('PK valueS: ',valueS)
-            // Change symbol
-            console.log('PSG: ', posiSym);
-            console.log('PS0: ', posiSym[0]);
-            console.log('PS1: ', posiSym[1]);
-            if(parseInt(posiSym[0]) + 1 == parseInt(posiSym[1])){
-                console.log('entro WTF');
+            allSym.push(key);
+
+            valueA = valueS.slice(0, posiSym[0] - 1);
+
+            // if there are 2 symbols the same or different
+            if(contSym == 2 && valueS.length == posiSym[0] + 1){
                 if(valueS[valueS.length - 2] != valueS.slice(-1)){
                     valueS = valueS.slice(0, -2).concat(valueS.slice(-1));
                     posiSym.pop();
@@ -248,73 +306,71 @@ function pressKey(simbol){
                 }
                 contSym = 1;
             }
-            
-            // Operation with other simbol
+
+            // if there are 2 symbols
             if(contSym == 2){
-                console.log('yendo a operaciones');
-                withSimbol = 1;
-                console.log('posiSym[0]: ',posiSym[0]);
-                valueB.push(valueS.slice(posiSym[0]).slice(0, -1).join(''));
-                console.log('PK valueB: ',valueB);
-                operations();                
+                withSymbol = 1;
+                operations();
             }
-            
-            valueA.push(valueS.join('').slice(0, -1));
-            allSym.push(simbol);
         }
-    })
-
+    }) 
     
-    console.log('PK valueS: ',valueS)
+    // add value to B
+    if(contSym == 1 && valueS.length >= posiSym[0] + 1){
+        block = 1;
+        valueB = valueS.slice(posiSym[0]);
+    }
+
+    // displays on screen
     digits.textContent = valueS.join('');
-
-
-    console.log('--- terminooooo ---');
 }
-    
 
 function operations(){
 
-    a = valueS.join('')
-
-    console.log('allSymG: ', allSym)
-    console.log('allSym[0]: ', allSym[0])
-    const symbolToOperation = {
+    symbolToOperation = {
         '+' : (a,b) => a + b,
         '-' : (a,b) => a - b,
-        '/' : (a,b) => a / b,
         'x' : (a,b) => a * b,
-    };
-    
-    const operation = symbolToOperation[allSym[0]]
+        '/' : (a,b) => a / b,
+    }
+
+    operation = symbolToOperation[allSym[0]]
+
     if(operation){
-        console.log('operation: ',operation)
-        console.log('lo encontro');
-        console.log('VS: ',valueS);
-        console.log('VA: ',valueA);
-        console.log('VA0: ',valueA[0]);
-        console.log('VB: ',valueB);
-        result = operation(parseFloat(valueA[0]), parseFloat(valueB));
-        digits.textContent = result
+        result = operation(parseFloat(valueA.join('')), parseFloat(valueB.join('')))
+        valueS = result;   
     }
 
-    if(withEqual == 1){
-        valueS = [result];
-        withEqual = 0;
-        contSym = 0;
-    }
-
-    if(withSimbol == 1){
-        valueS = [result, valueS.slice(-1).join('')];
-        withSimbol = 0;
-        contSym = 1;
-        posiSym = [2];
-    }
-
-    allSym.shift();
-
-    valueA = [result];
+    valueS = valueS.toString().split('');
+    valueA = valueS;
     valueB = [];
+    
+    // if the calculation was done by pressing equal
+    if(withEqual == 1){        
+        posiSym = [];
+        allSym = [];
+        contSym = 0;
+        withEqual = 0;
+        block = 0;
+    }
+    
+    // if the calculation was made with 2 symbols
+    if(withSymbol == 1){
+        valueS = valueS.concat(allSym[allSym.length - 1])        
+        posiSym = [valueA.length + 1]  
+        allSym.shift();        
+        contSym = 1;
+        withSymbol = 1;
+    }
+    
+    // displays on screen
+    digits.textContent = valueS.join('');
 }
 
 
+/*
+    Terminar de comentarlo:
+
+    arreglar el tema de los puntos infinitos.
+
+*/
