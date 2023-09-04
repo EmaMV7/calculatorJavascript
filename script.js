@@ -60,6 +60,8 @@ const equal = document.querySelector(".equal");
 // Action line 1
 
 clearEntry.addEventListener("click", ()=>{
+
+    // if we are in block A or B, we empty it.
     if(valueS == []){
         valueS = [];
     }else{
@@ -259,7 +261,7 @@ symbols = ['+','-','x','/'];
 
 function pressKey(key){
     
-    // if S start at 0
+    // if S / A start at 0
     if(valueS[0] == 0){
         if(!valueS[0] == 0 && !valueS[1] == '.'){
             valueS.shift();
@@ -282,6 +284,8 @@ function pressKey(key){
     // add value to A
     if(contSym == 0){
         valueA = valueS.join('');
+        console.log(valueA);
+        IsthereDot(valueS);
     }
 
     // if a symbol is added
@@ -291,7 +295,7 @@ function pressKey(key){
             posiSym.push(valueS.length);
             allSym.push(key);
 
-            valueA = valueS.slice(0, posiSym[0] - 1);
+            valueA = valueS.slice(0, posiSym[0] - 1);                
 
             // if there are 2 symbols the same or different
             if(contSym == 2 && valueS.length == posiSym[0] + 1){
@@ -319,12 +323,41 @@ function pressKey(key){
     if(contSym == 1 && valueS.length >= posiSym[0] + 1){
         block = 1;
         valueB = valueS.slice(posiSym[0]);
+        IsthereDot(valueB);
     }
 
     // displays on screen
     digits.textContent = valueS.join('');
 }
+function IsthereDot(dot){
 
+    contDot = 0;
+    posiDot = [];
+    dot.forEach(x => {
+        if(x == '.'){
+            console.log('valueS init: ',valueS);
+            console.log('dot init: ',dot);
+            contDot ++
+            posiDot.push(valueS.length)
+
+            if(contDot == 2){
+                console.log('borra punto')
+                valueB.pop();
+                contDot = 1;
+                posiDot.pop();
+                valueS.pop();
+            }
+            console.log('contDot: ', contDot);
+            console.log('posiDot: ', posiDot);
+            console.log('dot end: ',dot);
+            console.log('valueS end: ',valueS);
+        }
+    })
+
+    contDot = 0;
+    posiDot = [];
+
+}
 function operations(){
 
     symbolToOperation = {
@@ -369,8 +402,18 @@ function operations(){
 
 
 /*
-    Terminar de comentarlo:
+    One optimization that i could have added now that i see it's if i had added a constant calculator and initialized all the variables there.
 
-    arreglar el tema de los puntos infinitos.
-
+    ej: const calculator = {
+    valueS: [],
+    valueA: [],
+    valueB: [],
+    allSym: [],
+    contSym: 0,
+    posiSym: [],
+    withEqual: 0,
+    withSymbol: 0,
+    isPossible: 0,
+    symbols: ['+', '-', 'x', '/'],
+    }
 */
